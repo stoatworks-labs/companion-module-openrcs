@@ -7,7 +7,8 @@ import {
   encodeSet,
   encodeGet,
   parseLine,
-  takePlan,
+  takeSweep,
+  GCTBA_MAX,
   PLATFORMS,
 } from "../src/protocol.js";
 
@@ -85,29 +86,17 @@ ok("a set round-trips to a parseable echo", () => {
   assert.equal(p.value, 5000);
 });
 
-// --- take model: bank-aware direction ----------------------------------------
-ok("take from DOWN goes UP (GCtku), parks T-bar low", () => {
-  const plan = takePlan(0, 0 /* AT_DOWN */, 1000);
-  assert.deepEqual(plan, [
-    { mnemonic: "GCtba", idx: [0], value: 0 },
-    { mnemonic: "GCtup", idx: [0], value: 1000 },
-    { mnemonic: "GCtku", idx: [0], value: 1 },
-  ]);
+// --- take model: T-bar sweep, bank-aware direction ---------------------------
+// The device's auto-take verbs stall on real hardware; a take sweeps GCtba from
+// the live end to the other.
+ok("take from DOWN sweeps T-bar 0 -> 65535 (bring UP live)", () => {
+  assert.deepEqual(takeSweep(0 /* AT_DOWN */), { from: 0, to: GCTBA_MAX });
 });
-ok("take from UP goes DOWN (GCtkd), parks T-bar high", () => {
-  const plan = takePlan(3, 1 /* AT_UP */, 500);
-  assert.deepEqual(plan, [
-    { mnemonic: "GCtba", idx: [3], value: 65535 },
-    { mnemonic: "GCtdn", idx: [3], value: 500 },
-    { mnemonic: "GCtkd", idx: [3], value: 1 },
-  ]);
+ok("take from UP sweeps T-bar 65535 -> 0 (bring DOWN live)", () => {
+  assert.deepEqual(takeSweep(1 /* AT_UP */), { from: GCTBA_MAX, to: 0 });
 });
-ok("a cut-like take omits the transition time", () => {
-  const plan = takePlan(0, 0, null);
-  assert.deepEqual(plan, [
-    { mnemonic: "GCtba", idx: [0], value: 0 },
-    { mnemonic: "GCtku", idx: [0], value: 1 },
-  ]);
+ok("mid-transition FROM_UP is treated as up-live (sweeps down)", () => {
+  assert.deepEqual(takeSweep(3 /* FROM_UP */), { from: GCTBA_MAX, to: 0 });
 });
 
 console.log(`\n${n} checks passed.`);

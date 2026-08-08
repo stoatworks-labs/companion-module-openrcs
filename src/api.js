@@ -4,12 +4,12 @@ import {
   encodeSet,
   encodeGet,
   parseLine,
-  takePlan,
+  takeSweep,
   liveCtx,
 } from "./protocol.js";
 
 const PORT = 10500;
-const GROUPS = 16; // GCsta/GCtku etc. are indexed [16]
+const GROUPS = 16; // GCsta/GCtba etc. are indexed [16]
 
 // One TCP link to the processor, with a small state cache. The device pushes
 // unsolicited frames and splits replies across reads, so lines are buffered and
@@ -19,6 +19,7 @@ export const socket = {
   tcp: null,
   buffer: "",
   closing: false,
+  tbarTimers: {}, // group -> interval, so a new take cancels a running sweep
 
   connect(self) {
     this.closing = false;
@@ -94,26 +95,48 @@ export const socket = {
     this.send(self, line.endsWith("\n") ? line : line + (self.term ?? "\n"));
   },
 
-  // Bank-aware take/cut of a group, using the cached GCsta.
+  // Bank-aware take of a group: sweep the T-bar from the live end to the other
+  // over ttime ms. The device's auto-take verbs (GCtku/GCtkd) stall on real
+  // hardware, so GCtba is driven directly; a cut jumps straight to the target.
   take(self, group, ttime) {
-    const st = self.state.gcsta[group] ?? 0;
-    for (const c of takePlan(group, st, ttime))
-      this.set(self, c.mnemonic, c.idx, c.value);
+    const { from, to } = takeSweep(self.state.gcsta[group] ?? 0);
+    this.stopSweep(group);
+    if (!ttime || ttime <= 0 || from === to) {
+      this.set(self, "GCtba", [group], to);
+      return;
+    }
+    const start = Date.now();
+    const tick = () => {
+      const t = Math.min(1, (Date.now() - start) / ttime);
+      this.set(self, "GCtba", [group], Math.round(from + (to - from) * t));
+      if (t >= 1) this.stopSweep(group);
+    };
+    this.tbarTimers[group] = setInterval(tick, 45); // ~22 fps, last tick lands on `to`
+    tick();
   },
   cut(self, group) {
-    this.take(self, group, 0);
-    setTimeout(() => this.set(self, "GCtfr", [group], 1), 60);
+    const { to } = takeSweep(self.state.gcsta[group] ?? 0);
+    this.stopSweep(group);
+    this.set(self, "GCtba", [group], to);
   },
   tbar(self, group, value) {
+    this.stopSweep(group);
     this.set(self, "GCtba", [group], value);
   },
   liveBank(self, group) {
     return liveCtx(self.state.gcsta[group] ?? 0);
   },
+  stopSweep(group) {
+    if (this.tbarTimers[group]) {
+      clearInterval(this.tbarTimers[group]);
+      delete this.tbarTimers[group];
+    }
+  },
 
   close(silent) {
     this.closing = true;
     this.buffer = "";
+    for (const g of Object.keys(this.tbarTimers)) this.stopSweep(g);
     if (this.tcp) {
       try {
         this.tcp.destroy();

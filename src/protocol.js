@@ -62,33 +62,25 @@ export function parseLine(line) {
 
 // ---- take model (LiveCore banks) ----
 // GCsta[g] is the group's transition state: 0 AT_DOWN, 1 AT_UP, 2 FROM_DOWN,
-// 3 FROM_UP. The live bank is UP for 1/3, DOWN otherwise; a take transitions to
-// the other one, parking the T-bar at the live end first so it has travel.
+// 3 FROM_UP. The live bank is UP for 1/3, DOWN otherwise.
 export const GRP_AT_DOWN = 0,
   GRP_AT_UP = 1,
   GRP_FROM_DOWN = 2,
   GRP_FROM_UP = 3;
+export const GCTBA_MAX = 65535;
 
 export function liveCtx(gcsta) {
   return gcsta === GRP_AT_UP || gcsta === GRP_FROM_UP ? 1 : 0;
 }
 
 /**
- * The sequence of sets that takes a group, given its current GCsta. Returns an
- * array of { mnemonic, idx, value } so the caller can encode and send them in
- * order. ttime is the transition time in ms (0 for a cut-like take).
+ * The T-bar sweep for a take, given the group's current GCsta: from the live
+ * end to the other. On real LiveCore hardware the device's own auto-take verbs
+ * (GCtku/GCtkd) do NOT animate — the group sticks in EFFECT_FROM_* with the bar
+ * frozen — so a take animates GCtba between these ends instead, and a cut jumps
+ * straight to `to`. Returns { from, to } in GCtba units (0..65535).
  */
-export function takePlan(group, gcsta, ttime) {
-  const to = 1 - liveCtx(gcsta);
-  const plan = [
-    { mnemonic: "GCtba", idx: [group], value: to === 1 ? 0 : 65535 },
-  ];
-  if (ttime != null)
-    plan.push({
-      mnemonic: to === 1 ? "GCtup" : "GCtdn",
-      idx: [group],
-      value: ttime,
-    });
-  plan.push({ mnemonic: to === 1 ? "GCtku" : "GCtkd", idx: [group], value: 1 });
-  return plan;
+export function takeSweep(gcsta) {
+  const live = liveCtx(gcsta);
+  return { from: live === 1 ? GCTBA_MAX : 0, to: live === 1 ? 0 : GCTBA_MAX };
 }

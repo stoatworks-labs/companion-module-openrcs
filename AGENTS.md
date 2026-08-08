@@ -38,10 +38,13 @@ thing to regress; the smoke test pins the exact bytes for both platforms. Keep i
 
 LiveCore screens have fixed preset banks (PA/PB); a take transitions between them, and which
 one is on air is the device's business, read from `GCsta[group]`. So the module keeps a small
-state cache (`self.state.gcsta`) fed by the device's pushes, and `protocol.js::takePlan`
-computes the correct direction (`GCtku` up vs `GCtkd` down) and parks the T-bar at the live
-end first so the transition has travel. Sending a bare take verb without this is how you get a
-group stuck mid-transition. Groups are indexed `[16]`; an ungrouped screen is its own group.
+state cache (`self.state.gcsta`) fed by the device's pushes. **The device's own auto-take verbs
+(`GCtku`/`GCtkd`) do NOT animate on real hardware** — firing one leaves the group stuck in
+`EFFECT_FROM_*` with the T-bar frozen (confirmed on a NeXtage 16, sole session, with and
+without `AUTO_TAKE`). The manual T-bar `GCtba` is what actually transitions, so `protocol.js::
+takeSweep(gcsta)` returns the `{from,to}` bar ends and `api.js::take` **sweeps `GCtba`** between
+them over the transition time (a cut jumps straight to `to`). Groups are indexed `[16]`; an
+ungrouped screen is its own group.
 
 ## 4. Layout
 
