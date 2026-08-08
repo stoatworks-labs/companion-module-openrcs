@@ -1,0 +1,16 @@
+name: test
+
+# The wire protocol is pinned byte-for-byte by a dependency-free smoke test.
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node test/smoke.mjs
