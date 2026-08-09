@@ -19,6 +19,21 @@ browser control panel, built on the same protocol.
 Not affiliated with or endorsed by Analog Way. Product names are used only to
 describe compatibility.
 
+<!-- downloads:start -->
+
+## Download
+
+**[v1.0.0](https://github.com/stoatworks-labs/companion-module-openrcs/releases/tag/v1.0.0)**
+
+This release contains:
+
+- [`companion-module-openrcs-pkg.tgz`](https://github.com/stoatworks-labs/companion-module-openrcs/releases/latest/download/companion-module-openrcs-pkg.tgz) — npm package, 8 KB
+- [`openrcs-1.0.0.tgz`](https://github.com/stoatworks-labs/companion-module-openrcs/releases/download/v1.0.0/openrcs-1.0.0.tgz) — npm package, 8 KB
+
+All builds, checksums and release notes: [github.com/stoatworks-labs/companion-module-openrcs/releases](https://github.com/stoatworks-labs/companion-module-openrcs/releases).
+
+<!-- downloads:end -->
+
 ## Supported hardware
 
 - **LiveCore** — Ascender 16/32/48, NeXtage 8/16, SmartMatriX Ultra
