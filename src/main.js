@@ -1,9 +1,4 @@
-import {
-  InstanceBase,
-  Regex,
-  runEntrypoint,
-  InstanceStatus,
-} from "@companion-module/base";
+import { InstanceBase, Regex, InstanceStatus } from "@companion-module/base";
 import { UpgradeScripts } from "./upgrades.js";
 import UpdateActions from "./actions.js";
 import UpdateFeedbacks from "./feedbacks.js";
@@ -13,7 +8,7 @@ import { socket } from "./api.js";
 import { PLATFORMS } from "./protocol.js";
 import { aboutField } from "./about-field.js";
 
-class ModuleInstance extends InstanceBase {
+export default class ModuleInstance extends InstanceBase {
   constructor(internal) {
     super(internal);
     this.state = { gcsta: {}, gcava: {}, model: null };
@@ -83,4 +78,4 @@ class ModuleInstance extends InstanceBase {
   }
 }
 
-runEntrypoint(ModuleInstance, UpgradeScripts);
+export { UpgradeScripts };
