@@ -77,3 +77,10 @@ test/smoke.mjs    protocol.js byte-for-byte, no dependencies
 npm test           # protocol codec, no hardware, no install needed for the codec itself
 npm run format     # prettier
 ```
+
+## Notes
+
+`docs/NOTES.md` carries this repo's working notes — current status, decisions
+already made, and the traps that have actually bitten. Read it before changing
+anything non-obvious. Cross-cutting fleet knowledge lives in
+[fleet-notes](https://github.com/stoatworks-labs/fleet-notes).
