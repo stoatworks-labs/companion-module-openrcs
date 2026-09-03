@@ -158,8 +158,13 @@ export default function UpdateActions(self) {
           useVariables: true,
         },
       ],
-      callback: async (e) => {
-        const line = await self.parseVariablesInString(e.options.line);
+      // The option arrives already expanded: Companion resolves a
+      // `useVariables` field before invoking the callback.
+      // `parseVariablesInString` does not exist in base 2.x — on the context or
+      // on InstanceBase — and calling it throws when the action fires, while
+      // the module still loads cleanly.
+      callback: (e) => {
+        const line = String(e.options.line ?? "");
         if (line.trim()) socket.raw(self, line.trim());
       },
     },

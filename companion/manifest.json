@@ -5,7 +5,7 @@
   "name": "openrcs",
   "shortname": "openRCS",
   "description": "Drive an Analog Way LiveCore or Midra video processor over its native TCP control protocol — take and cut screens and groups, run the T-bar, recall master and screen memories, freeze inputs, black outputs, with on-air tally feedback. Not affiliated with Analog Way.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "repository": "git+https://github.com/stoatworks-labs/companion-module-openrcs.git",
   "bugs": "https://github.com/stoatworks-labs/companion-module-openrcs/issues",
@@ -23,6 +23,25 @@
   },
   "legacyIds": [],
   "manufacturer": "Analog Way (compatible)",
-  "products": ["LiveCore", "Midra", "Ascender", "NeXtage", "SmartMatriX", "Pulse2", "Eikos2", "Saphyr", "QuickVu"],
-  "keywords": ["analog way", "livecore", "midra", "nextage", "ascender", "video", "switcher", "presentation"]
+  "products": [
+    "LiveCore",
+    "Midra",
+    "Ascender",
+    "NeXtage",
+    "SmartMatriX",
+    "Pulse2",
+    "Eikos2",
+    "Saphyr",
+    "QuickVu"
+  ],
+  "keywords": [
+    "analog way",
+    "livecore",
+    "midra",
+    "nextage",
+    "ascender",
+    "video",
+    "switcher",
+    "presentation"
+  ]
 }

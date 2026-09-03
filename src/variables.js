@@ -1,16 +1,18 @@
 import { socket } from "./api.js";
 
+// Variable definitions are an OBJECT keyed by id in base 2.x, not the 1.x array
+// of `{ variableId, name }`. The real implementation THROWS on an array, which
+// fails init() and leaves a dead connection with no actions and no visible
+// cause — and, because rebuild() defines variables before presets, it also
+// takes the preset library down with it.
 export default function UpdateVariableDefinitions(self) {
-  const defs = [
-    { variableId: "connection", name: "Connection status" },
-    { variableId: "model", name: "Device model id" },
-    { variableId: "platform", name: "Platform" },
-  ];
+  const defs = {
+    connection: { name: "Connection status" },
+    model: { name: "Device model id" },
+    platform: { name: "Platform" },
+  };
   for (let g = 1; g <= 16; g++)
-    defs.push({
-      variableId: `group_${g}_bank`,
-      name: `Screen/group ${g} on-air bank`,
-    });
+    defs[`group_${g}_bank`] = { name: `Screen/group ${g} on-air bank` };
   self.setVariableDefinitions(defs);
 }
 
