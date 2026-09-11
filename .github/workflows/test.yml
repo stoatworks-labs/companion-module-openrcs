@@ -1,6 +1,10 @@
 name: test
 
-# The wire protocol is pinned byte-for-byte by a dependency-free smoke test.
+# The wire protocol is pinned byte-for-byte by the smoke test. It used to be
+# dependency-free; since it started importing src/main.js it pulls in
+# @companion-module/base for real, which is the point -- a bump that breaks
+# the module fails here rather than on a rack -- but it means the deps have
+# to be installed first, or every run dies on ERR_MODULE_NOT_FOUND.
 on:
   push:
   pull_request:
@@ -13,4 +17,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+      - run: npm ci
       - run: node test/smoke.mjs
