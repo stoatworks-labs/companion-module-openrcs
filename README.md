@@ -37,7 +37,14 @@ All builds, checksums and release notes: [github.com/stoatworks-labs/companion-m
 ## Supported hardware
 
 - **LiveCore** — Ascender 16/32/48, NeXtage 8/16, SmartMatriX Ultra
-- **Midra** — Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu
+- **Midra** — Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu.
+  Here the *group* is the screen (1–2): a take is the unit's own `GCtak`,
+  which runs each layer's programmed transition (the module first switches the
+  unit's preset-update mode off, because with it on the unit accepts the verb
+  and moves nothing); a cut runs the T-bar through the middle to the far end,
+  since a single write of the far end is ignored; T-bar positions are scaled
+  from the action's 0–65535 to the Midra's 0–10000. Verified on a Pulse2
+  (2026-09-17) — before 1.1.0 the Midra take and cut did nothing at all.
 
 ## Install
 

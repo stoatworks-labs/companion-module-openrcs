@@ -13,6 +13,9 @@ import {
   parseLine,
   takeSweep,
   GCTBA_MAX,
+  MIDRA_TBAR_MAX,
+  midraCutSteps,
+  midraTbar,
   PLATFORMS,
 } from "../src/protocol.js";
 
@@ -38,6 +41,20 @@ ok("set with index, LiveCore LF", () => {
 });
 ok("set with no index (scalar)", () => {
   assert.equal(encodeSet("OSupd", [], 1, "\n"), "1OSupd\n");
+});
+// --- Midra: the take is the verb, the cut is a T-bar run, both on 0..10000 --
+ok("Midra cut runs the bar through the middle to the far end", () => {
+  assert.deepEqual(midraCutSteps(0), [5000, MIDRA_TBAR_MAX]);
+  assert.deepEqual(midraCutSteps(undefined), [5000, MIDRA_TBAR_MAX]);
+  assert.deepEqual(midraCutSteps(MIDRA_TBAR_MAX), [5000, 0]);
+  assert.deepEqual(midraCutSteps(7000), [5000, 0]);
+});
+ok("Midra T-bar positions scale from the action's 0..65535", () => {
+  assert.equal(midraTbar(0), 0);
+  assert.equal(midraTbar(GCTBA_MAX), MIDRA_TBAR_MAX);
+  assert.equal(midraTbar(32768), 5000);
+  assert.equal(midraTbar(-5), 0);
+  assert.equal(midraTbar(99999), MIDRA_TBAR_MAX);
 });
 ok("set with multiple indices", () => {
   assert.equal(encodeSet("PRalp", [0, 0, 3], 128, "\n"), "0,0,3,128PRalp\n");

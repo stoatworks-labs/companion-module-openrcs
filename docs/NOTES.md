@@ -61,3 +61,18 @@ pinning 2.1.2; `npm ci` before trusting anything read out of it.
 and is PUBLIC at v1.0.0, plus a hardcoded `$(kestrel:...)` variable prefix. Untouched so far.
 
 See [companion module traps](https://github.com/stoatworks-labs/fleet-notes/blob/main/notes/reference_companion_module_traps.md) and [companion mynah](https://github.com/stoatworks-labs/companion-module-mynah/blob/main/docs/NOTES.md) (`companion-module-mynah`).
+
+**2026-09-17 — v1.1.0: the Midra take and cut work now; before, they did nothing.**
+`take()`/`cut()` swept `GCtba` between the LiveCore ends (0..65535) and read the
+direction from `GCsta`, which a Midra does not have — so on a Pulse2 a take wrote an
+out-of-range bar and nothing moved. Learned on the openrcs bench the night before
+(openrcs `docs/NOTES.md`, "Bench session before a show"): a Midra's take is `GCtak[screen]`,
+**inert while the unit's preset-update mode `CTpmu` is 1** (it latches at 1, `GCtav`
+sits at 0) and fine with it 0 — so the module writes `CTpmu 0`, then pulses `GCtak` 0
+then 1 (a 1 over a latched 1 is nothing). A cut is `GCtba[screen]` 0..10000 run
+through the middle to the far end, 50 ms apart — one write of the far end is ignored.
+Step back is `GCsba[screen]` (LiveCore's is `GCstb[group]`). On connect a Midra is
+asked `?` and its two screens' `GCtba`, not sixteen `GCsta`/`GCava` (all E10 there).
+Proven through the module's own `socket` layer at the real Pulse2 (192.168.1.140):
+preview colour → take → on air; cleared preview → cut → on air; state restored.
+`test/smoke.mjs` pins `midraCutSteps` and `midraTbar` (30 checks).

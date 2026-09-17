@@ -48,7 +48,7 @@ export default function UpdateActions(self) {
         {
           type: "number",
           id: "value",
-          label: "Position (0–65535)",
+          label: "Position (0–65535; scaled to a Midra's 0–10000)",
           default: 0,
           min: 0,
           max: 65535,
@@ -61,7 +61,7 @@ export default function UpdateActions(self) {
       name: "Step back — screen/group",
       options: [groupField],
       callback: async (e) =>
-        socket.set(self, "GCstb", [Number(e.options.group) - 1], 1),
+        socket.stepBack(self, Number(e.options.group) - 1),
     },
     recall_master: {
       name: "Recall master memory",

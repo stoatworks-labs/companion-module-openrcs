@@ -73,6 +73,31 @@ export function liveCtx(gcsta) {
   return gcsta === GRP_AT_UP || gcsta === GRP_FROM_UP ? 1 : 0;
 }
 
+// ---- take model (Midra) ----
+// A Midra has no GCsta and no banks: one preview per screen, and GCtak[screen]
+// puts it on air with each layer's own programmed transition. Measured on a
+// Pulse2 (2026-09-16): the verb is inert while the unit's preset-update mode
+// (CTpmu) is on — it latches at 1 and moves nothing — so CTpmu is written 0
+// first, and GCtak is pulsed 0 then 1 because a 1 written over a latched 1 is
+// nothing. Its T-bar is GCtba[screen] 0..10000, and either end-to-end run puts
+// the preview on air; the bar has to be seen to travel, so a cut is two writes
+// — the middle, then the far end — a single write of the far end is ignored.
+export const MIDRA_TBAR_MAX = 10000;
+
+/** The two GCtba writes that cut a Midra screen, from wherever its bar sits. */
+export function midraCutSteps(at) {
+  const to = (at ?? 0) >= MIDRA_TBAR_MAX / 2 ? 0 : MIDRA_TBAR_MAX;
+  return [MIDRA_TBAR_MAX / 2, to];
+}
+
+/** A T-bar position given on the LiveCore 0..65535 scale, on the Midra's. */
+export function midraTbar(value) {
+  return Math.round(
+    Math.min(Math.max(Number(value) || 0, 0), GCTBA_MAX) *
+      (MIDRA_TBAR_MAX / GCTBA_MAX),
+  );
+}
+
 /**
  * The T-bar sweep for a take, given the group's current GCsta: from the live
  * end to the other. On real LiveCore hardware the device's own auto-take verbs

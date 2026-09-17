@@ -6,10 +6,13 @@ import {
   parseLine,
   takeSweep,
   liveCtx,
+  midraCutSteps,
+  midraTbar,
 } from "./protocol.js";
 
 const PORT = 10500;
 const GROUPS = 16; // GCsta/GCtba etc. are indexed [16]
+const MIDRA_SCREENS = 2; // a Midra's GCtak/GCtba are per screen, [2]
 
 // One TCP link to the processor, with a small state cache. The device pushes
 // unsolicited frames and splits replies across reads, so lines are buffered and
@@ -26,7 +29,7 @@ export const socket = {
     this.close(true);
     const term = PLATFORMS[self.config.platform]?.term ?? "\n";
     self.term = term;
-    self.state = { gcsta: {}, gcava: {}, model: null };
+    self.state = { gcsta: {}, gcava: {}, gctba: {}, model: null };
 
     self.updateStatus(InstanceStatus.Connecting);
     const tcp = new TCPHelper(self.config.host, PORT);
@@ -41,11 +44,19 @@ export const socket = {
     tcp.on("connect", () => {
       self.log("info", `Connected to processor at ${self.config.host}:${PORT}`);
       self.updateStatus(InstanceStatus.Ok);
-      // Identity, then prime the group state the take logic depends on.
-      this.raw(self, self.config.platform === "midra" ? "?" : "!");
-      for (let g = 0; g < GROUPS; g++) {
-        this.send(self, encodeGet("GCsta", [g]));
-        this.send(self, encodeGet("GCava", [g]));
+      // Identity, then prime the state the take logic depends on: the group
+      // banks on LiveCore, the per-screen T-bar on a Midra (which has no
+      // GCsta or GCava — asking would only draw a NAK per group).
+      if (this.isMidra(self)) {
+        this.raw(self, "?");
+        for (let s = 0; s < MIDRA_SCREENS; s++)
+          this.send(self, encodeGet("GCtba", [s]));
+      } else {
+        this.raw(self, "!");
+        for (let g = 0; g < GROUPS; g++) {
+          this.send(self, encodeGet("GCsta", [g]));
+          this.send(self, encodeGet("GCava", [g]));
+        }
       }
     });
     tcp.on("data", (chunk) => this.onData(self, chunk));
@@ -75,6 +86,8 @@ export const socket = {
       self.state.gcsta[idx[0]] = value;
     else if (mnemonic === "GCava" && idx.length === 1)
       self.state.gcava[idx[0]] = value;
+    else if (mnemonic === "GCtba" && idx.length === 1)
+      self.state.gctba[idx[0]] = value;
     else if (mnemonic === "PDEV" || mnemonic === "DEV")
       self.state.model = value;
     self.onStateChanged?.();
@@ -95,10 +108,26 @@ export const socket = {
     this.send(self, line.endsWith("\n") ? line : line + (self.term ?? "\n"));
   },
 
+  isMidra(self) {
+    return self.config?.platform === "midra";
+  },
+
   // Bank-aware take of a group: sweep the T-bar from the live end to the other
   // over ttime ms. The device's auto-take verbs (GCtku/GCtkd) stall on real
   // hardware, so GCtba is driven directly; a cut jumps straight to the target.
+  //
+  // A Midra is different (see protocol.js): the "group" is the screen, the
+  // take is the device's own GCtak with the unit's preset-update mode off —
+  // the layers' programmed transitions run, so the time is the device's, not
+  // ours — and a cut is the T-bar run through the middle to the far end.
   take(self, group, ttime) {
+    if (this.isMidra(self)) {
+      this.stopSweep(group);
+      this.set(self, "CTpmu", [], 0);
+      this.set(self, "GCtak", [group], 0);
+      this.set(self, "GCtak", [group], 1);
+      return;
+    }
     const { from, to } = takeSweep(self.state.gcsta[group] ?? 0);
     this.stopSweep(group);
     if (!ttime || ttime <= 0 || from === to) {
@@ -115,13 +144,33 @@ export const socket = {
     tick();
   },
   cut(self, group) {
-    const { to } = takeSweep(self.state.gcsta[group] ?? 0);
     this.stopSweep(group);
+    if (this.isMidra(self)) {
+      const [mid, to] = midraCutSteps(self.state.gctba[group]);
+      this.set(self, "CTpmu", [], 0);
+      this.set(self, "GCtba", [group], mid);
+      this.tbarTimers[group] = setTimeout(() => {
+        delete this.tbarTimers[group];
+        this.set(self, "GCtba", [group], to);
+      }, 50);
+      return;
+    }
+    const { to } = takeSweep(self.state.gcsta[group] ?? 0);
     this.set(self, "GCtba", [group], to);
   },
+  // The action's scale is LiveCore's 0..65535; a Midra's bar runs 0..10000.
   tbar(self, group, value) {
     this.stopSweep(group);
-    this.set(self, "GCtba", [group], value);
+    this.set(
+      self,
+      "GCtba",
+      [group],
+      this.isMidra(self) ? midraTbar(value) : value,
+    );
+  },
+  // LiveCore steps a group back; a Midra steps a screen back.
+  stepBack(self, group) {
+    this.set(self, this.isMidra(self) ? "GCsba" : "GCstb", [group], 1);
   },
   liveBank(self, group) {
     return liveCtx(self.state.gcsta[group] ?? 0);
