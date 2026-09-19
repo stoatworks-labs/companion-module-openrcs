@@ -23,12 +23,12 @@ describe compatibility.
 
 ## Download
 
-**[v1.1.0](https://github.com/stoatworks-labs/companion-module-openrcs/releases/tag/v1.1.0)**
+**[v1.1.1](https://github.com/stoatworks-labs/companion-module-openrcs/releases/tag/v1.1.1)**
 
 This release contains:
 
 - [`companion-module-openrcs-pkg.tgz`](https://github.com/stoatworks-labs/companion-module-openrcs/releases/latest/download/companion-module-openrcs-pkg.tgz) — npm package, 9 KB
-- [`openrcs-1.1.0.tgz`](https://github.com/stoatworks-labs/companion-module-openrcs/releases/download/v1.1.0/openrcs-1.1.0.tgz) — npm package, 9 KB
+- [`openrcs-1.1.1.tgz`](https://github.com/stoatworks-labs/companion-module-openrcs/releases/download/v1.1.1/openrcs-1.1.1.tgz) — npm package, 9 KB
 
 All builds, checksums and release notes: [github.com/stoatworks-labs/companion-module-openrcs/releases](https://github.com/stoatworks-labs/companion-module-openrcs/releases).
 
