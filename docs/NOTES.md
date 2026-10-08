@@ -76,3 +76,20 @@ asked `?` and its two screens' `GCtba`, not sixteen `GCsta`/`GCava` (all E10 the
 Proven through the module's own `socket` layer at the real Pulse2 (192.168.1.140):
 preview colour → take → on air; cleared preview → cut → on air; state restored.
 `test/smoke.mjs` pins `midraCutSteps` and `midraTbar` (30 checks).
+
+**2026-10-08 — a load-to-preview could have landed on air; now it names its bank.**
+Watched on the wire while a NeXtage 16 was set up (openrcs `docs/NOTES.md`,
+"Watching the vendor client set up a NeXtage 16"): this module, openrcs-server, the
+vendor's client (TCP 4521) and the vendor's Companion module (TCP 10600) all held
+the unit at once. The module's screen recall sent `PMscf`, `PMmet`, `PMloa` and
+never `PMprf` — the bank a load lands in, one value the unit keeps for every
+client. The vendor's module writes `1PMprf` on every press, which is the only
+reason those loads went to preview (bank A, with `GCsta` 1); openrcs's Memories
+view writes `PMprf` 0 when its Program bank is chosen, and after that the same
+button would have loaded onto program. A load now writes `PMprf`/`PSprf` 1; a
+load-and-take does not, as openrcs's own recall does not. The sequences live in
+`protocol.js` (`recallScreenSteps`, `recallMasterSteps`) and the smoke test pins
+them. Also new: **Load multiviewer layout** — `MMloa[memory, monitor]`, memory
+first, spelled `3,0,1MMloa` by both vendor clients — with presets for layouts
+1–8. The new writes have not met hardware; the old screen recall and the T-bar
+have, from Companion, on that unit.

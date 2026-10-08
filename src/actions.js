@@ -1,4 +1,13 @@
 import { socket } from "./api.js";
+import {
+  recallMasterSteps,
+  recallScreenSteps,
+  loadMultiviewerSteps,
+} from "./protocol.js";
+
+const sendSteps = (self, steps) => {
+  for (const [m, idx, v] of steps) socket.set(self, m, idx, v);
+};
 
 // One-based in the UI, zero-based on the wire: a "screen/group" of 1 is group
 // index 0. An ungrouped screen is its own group, so screen N maps to group N-1
@@ -60,8 +69,7 @@ export default function UpdateActions(self) {
     step_back: {
       name: "Step back — screen/group",
       options: [groupField],
-      callback: async (e) =>
-        socket.stepBack(self, Number(e.options.group) - 1),
+      callback: async (e) => socket.stepBack(self, Number(e.options.group) - 1),
     },
     recall_master: {
       name: "Recall master memory",
@@ -74,11 +82,11 @@ export default function UpdateActions(self) {
           default: true,
         },
       ],
-      callback: async (e) => {
-        const slot = Number(e.options.slot) - 1;
-        socket.set(self, "PSmet", [], slot);
-        socket.set(self, e.options.take ? "PSlot" : "PSloa", [], 1);
-      },
+      callback: async (e) =>
+        sendSteps(
+          self,
+          recallMasterSteps(Number(e.options.slot) - 1, e.options.take),
+        ),
     },
     recall_screen: {
       name: "Recall screen memory",
@@ -99,11 +107,44 @@ export default function UpdateActions(self) {
           default: true,
         },
       ],
-      callback: async (e) => {
-        socket.set(self, "PMscf", [], Number(e.options.screen) - 1);
-        socket.set(self, "PMmet", [], Number(e.options.slot) - 1);
-        socket.set(self, e.options.take ? "PMlot" : "PMloa", [], 1);
-      },
+      callback: async (e) =>
+        sendSteps(
+          self,
+          recallScreenSteps(
+            Number(e.options.screen) - 1,
+            Number(e.options.slot) - 1,
+            e.options.take,
+          ),
+        ),
+    },
+    load_multiviewer: {
+      name: "Load multiviewer layout (LiveCore)",
+      options: [
+        {
+          type: "number",
+          id: "memory",
+          label: "Layout memory (1–8)",
+          default: 1,
+          min: 1,
+          max: 8,
+        },
+        {
+          type: "number",
+          id: "monitor",
+          label: "Monitoring output (1–2)",
+          default: 1,
+          min: 1,
+          max: 2,
+        },
+      ],
+      callback: async (e) =>
+        sendSteps(
+          self,
+          loadMultiviewerSteps(
+            Number(e.options.memory) - 1,
+            Number(e.options.monitor) - 1,
+          ),
+        ),
     },
     freeze_input: {
       name: "Freeze / unfreeze input",

@@ -51,10 +51,10 @@ ungrouped screen is its own group.
 ```
 src/protocol.js   the wire format + take model (pure, tested)
 src/api.js        one TCPHelper link, line buffering, state cache, send/take/cut
-src/actions.js    take/cut/tbar/step-back, memory recall, freeze, black, raw
+src/actions.js    take/cut/tbar/step-back, memory and multiviewer recall, freeze, black, raw
 src/feedbacks.js  on-air / transitioning / available, from the GCsta cache
 src/variables.js  connection, model, per-group on-air bank
-src/presets.js    take/cut 1–4 with tally, master memories 1–8
+src/presets.js    take/cut 1–4 with tally, master memories 1–8, multiviewer layouts 1–8
 src/main.js       InstanceBase: config fields, lifecycle, rebuild
 test/smoke.mjs    protocol.js byte-for-byte, no dependencies
 ```
@@ -68,7 +68,11 @@ test/smoke.mjs    protocol.js byte-for-byte, no dependencies
 - **Be precise about validation.** The protocol byte shapes are confirmed against real
   hardware in the openrcs project (a NeXtage 16 and a Pulse2); this module's _actions_ have
   been exercised against the openrcs simulated device and the protocol tests, but not yet
-  end-to-end from Companion against real hardware. Do not overstate.
+  end-to-end from Companion against real hardware — the exception is a screen-memory load
+  and the T-bar, seen on the wire from Companion to a NeXtage 16 on 2026-10-08. Do not
+  overstate.
+- **A load names its bank.** `PMprf`/`PSprf` is one value the unit keeps for every client,
+  and other clients write 0. A load that does not write 1 first can land on air.
 - **Use vendor names nominatively only** — to state compatibility, never as branding.
 
 ## 6. Verifying

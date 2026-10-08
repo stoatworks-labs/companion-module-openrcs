@@ -74,7 +74,8 @@ across its full 0–65535 range, which is the action to attach to a fader.
 | **Take / Cut — screen/group** | Transition or cut, with the direction resolved from the tracked bank. |
 | **T-bar** | Manual transition, 0–65535. |
 | **Step back** | Previous look. |
-| **Recall master / screen memory** | Recall and take, or load to preview only. |
+| **Recall master / screen memory** | Recall and take, or load to preview only. A load always names the preview bank, whatever another client left selected. |
+| **Load multiviewer layout** | A stored layout memory onto a monitoring output (LiveCore). The monitor only. |
 | **Freeze input** | Per input. |
 | **Output black** | Per output. |
 | **Raw command** | A protocol line directly, **mnemonic last** — e.g. `1,5000GCtba`. Supports Companion variables. |
@@ -97,8 +98,8 @@ screen is a press that does nothing, and it looks identical to one that worked.
 
 ## Presets
 
-Ready-made take and cut buttons for screens/groups 1–4 with on-air tally, and recall buttons for
-master memories 1–8. Build outward from those rather than from blank buttons — they already carry
+Ready-made take and cut buttons for screens/groups 1–4 with on-air tally, recall buttons for
+master memories 1–8, and multiviewer layouts 1–8. Build outward from those rather than from blank buttons — they already carry
 the tally wiring.
 
 ---

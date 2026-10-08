@@ -16,6 +16,9 @@ import {
   MIDRA_TBAR_MAX,
   midraCutSteps,
   midraTbar,
+  recallMasterSteps,
+  recallScreenSteps,
+  loadMultiviewerSteps,
   PLATFORMS,
 } from "../src/protocol.js";
 
@@ -120,6 +123,31 @@ ok("mid-transition FROM_UP is treated as up-live (sweeps down)", () => {
   assert.deepEqual(takeSweep(3 /* FROM_UP */), { from: GCTBA_MAX, to: 0 });
 });
 
+// --- memory recall: a load names its bank, whoever wrote PRESET_FROM last ---
+// The unit keeps one PMprf/PSprf for every client; openrcs's Memories view
+// writes 0 for its Program bank, so a load that does not write 1 can go on air.
+const wire = (steps) =>
+  steps.map(([m, idx, v]) => encodeSet(m, idx, v, "\n")).join("");
+ok("a screen-memory load writes PMprf 1 before PMloa", () => {
+  assert.equal(
+    wire(recallScreenSteps(0, 2, false)),
+    "0PMscf\n2PMmet\n1PMprf\n1PMloa\n",
+  );
+});
+ok("a screen-memory take leaves PMprf alone", () => {
+  assert.equal(wire(recallScreenSteps(1, 4, true)), "1PMscf\n4PMmet\n1PMlot\n");
+});
+ok("a master-memory load writes PSprf 1 before PSloa", () => {
+  assert.equal(wire(recallMasterSteps(7, false)), "7PSmet\n1PSprf\n1PSloa\n");
+});
+ok("a master-memory take leaves PSprf alone", () => {
+  assert.equal(wire(recallMasterSteps(0, true)), "0PSmet\n1PSlot\n");
+});
+// The vendor's own clients spell layout memory 4 on monitor 1 as 3,0,1MMloa.
+ok("a multiviewer layout load is MMloa[memory, monitor]", () => {
+  assert.equal(wire(loadMultiviewerSteps(3, 0)), "3,0,1MMloa\n");
+});
+
 // ---------------------------------------------------------------------------
 // The module surface, against the real @companion-module/base
 // ---------------------------------------------------------------------------
@@ -187,6 +215,7 @@ ok("registers the actions a surface needs", () => {
     "step_back",
     "recall_master",
     "recall_screen",
+    "load_multiviewer",
     "raw",
   ]) {
     assert.ok(recorded.actions[id], `missing action ${id}`);

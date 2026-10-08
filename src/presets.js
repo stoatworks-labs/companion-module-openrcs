@@ -19,6 +19,7 @@ const GREEN = combineRgb(63, 185, 80);
 /** How many of each to generate. Enough to fill a page, not the whole bank. */
 const GROUPS = 4;
 const MASTER_MEMORIES = 8;
+const MULTIVIEWER_LAYOUTS = 8;
 
 const button = (
   name,
@@ -103,6 +104,33 @@ export default function UpdatePresets(self) {
       "Recall a whole-desk memory and take it. Drop the take in the action's options to load to preview instead.",
     definitions: [
       { id: "master", type: "simple", name: "Master", presets: masterIds },
+    ],
+  });
+
+  // --- Multiviewer layouts ------------------------------------------------
+
+  // Load multiviewer layout memories 1–8 onto monitoring output 1.
+  const layoutIds = [];
+  for (let m = 1; m <= MULTIVIEWER_LAYOUTS; m++) {
+    const id = `multiviewer_${m}`;
+    presets[id] = button(`Load multiviewer layout ${m}`, `MV\n${m}`, DARK, [
+      { actionId: "load_multiviewer", options: { memory: m, monitor: 1 } },
+    ]);
+    layoutIds.push(id);
+  }
+
+  sections.push({
+    id: "multiviewer_layouts",
+    name: "Multiviewer layouts",
+    description:
+      "Load a stored multiviewer layout onto monitoring output 1 (LiveCore). It changes the monitor only, never the screens.",
+    definitions: [
+      {
+        id: "multiviewer",
+        type: "simple",
+        name: "Layouts",
+        presets: layoutIds,
+      },
     ],
   });
 

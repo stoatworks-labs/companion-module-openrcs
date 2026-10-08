@@ -60,6 +60,41 @@ export function parseLine(line) {
   return { mnemonic, idx, value };
 }
 
+// ---- memory recall (LiveCore) ----
+// A recall is a few selector writes and then one verb, each a [mnemonic, idx,
+// value] set. PMprf/PSprf (PRESET_FROM) is the bank a load lands in — 1 the bank
+// that is not on air — and the unit keeps one value for every client: the
+// vendor's own client sets it, and openrcs's Memories view writes 0 when its
+// Program bank is chosen. A load that leaves it to chance can therefore land on
+// air, so a load always writes 1. A load-and-take (PMlot/PSlot) does not, as
+// openrcs's own recall does not.
+
+/** The sets that recall master memory `slot` (0-based). */
+export function recallMasterSteps(slot, take) {
+  return [
+    ["PSmet", [], slot],
+    ...(take ? [] : [["PSprf", [], 1]]),
+    [take ? "PSlot" : "PSloa", [], 1],
+  ];
+}
+
+/** The sets that recall screen memory `slot` onto `screen` (both 0-based). */
+export function recallScreenSteps(screen, slot, take) {
+  return [
+    ["PMscf", [], screen],
+    ["PMmet", [], slot],
+    ...(take ? [] : [["PMprf", [], 1]]),
+    [take ? "PMlot" : "PMloa", [], 1],
+  ];
+}
+
+/** The set that loads multiviewer layout memory `memory` onto monitoring output
+ *  `monitor` (both 0-based). Memory first: MMloa is [memory, monitor], the
+ *  reverse of MMsav's [monitor, memory]. The unit applies a loaded layout itself. */
+export function loadMultiviewerSteps(memory, monitor) {
+  return [["MMloa", [memory, monitor], 1]];
+}
+
 // ---- take model (LiveCore banks) ----
 // GCsta[g] is the group's transition state: 0 AT_DOWN, 1 AT_UP, 2 FROM_DOWN,
 // 3 FROM_UP. The live bank is UP for 1/3, DOWN otherwise.

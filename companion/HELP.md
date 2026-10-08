@@ -17,9 +17,10 @@ surface instead of a browser.
   hardware.
 
 The control protocol is **unauthenticated**: anyone who can reach port 10500 can
-drive the switcher. Keep it on a trusted network. The device also accepts very
-few concurrent control sessions — if openrcs-server or the vendor's own client
-already holds the connection, this module may not be able to connect.
+drive the switcher. Keep it on a trusted network. Several control sessions can
+share a unit — a NeXtage 16 has held this module, openrcs-server, the vendor's
+own client and the vendor's Companion module at once — and a change made by any
+of them reaches the others.
 
 ### Actions
 
@@ -29,8 +30,11 @@ already holds the connection, this module may not be able to connect.
   group.
 - **T-bar** — drive a group's transition bar manually (0–65535).
 - **Step back** — return a group to its previous look.
-- **Recall master / screen memory** — recall a memory and take it (or just load
-  it to preview).
+- **Recall master / screen memory** — recall a memory and take it, or just load
+  it to preview. A load always names the preview bank, so it cannot land on air
+  whatever another client last chose.
+- **Load multiviewer layout** (LiveCore) — put a stored layout memory on a
+  monitoring output. The monitor only; the screens do not change.
 - **Freeze input**, **Output black** — per-input freeze and per-output black.
 - **Raw command** — send a protocol line directly (mnemonic last, e.g.
   `1,5000GCtba`). Supports Companion variables.
@@ -43,5 +47,5 @@ already holds the connection, this module may not be able to connect.
 
 ### Presets
 
-Ready-made take/cut buttons for screens/groups 1–4 (with on-air tally) and
-recall buttons for master memories 1–8.
+Ready-made take/cut buttons for screens/groups 1–4 (with on-air tally), recall
+buttons for master memories 1–8, and multiviewer layouts 1–8.

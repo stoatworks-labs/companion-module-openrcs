@@ -55,9 +55,9 @@ unauthenticated and accepts very few concurrent sessions; see
 ## Actions, feedbacks, presets
 
 Take/cut/T-bar/step-back for screens and groups (bank-aware), master and screen
-memory recall, input freeze, output black, and a raw-command escape hatch;
-on-air / transitioning / available feedbacks; ready-made take and memory
-presets. Full list in [companion/HELP.md](companion/HELP.md).
+memory recall, multiviewer layout recall, input freeze, output black, and a
+raw-command escape hatch; on-air / transitioning / available feedbacks;
+ready-made take, memory and multiviewer-layout presets. Full list in [companion/HELP.md](companion/HELP.md).
 
 ## Develop
 
