@@ -93,3 +93,11 @@ them. Also new: **Load multiviewer layout** — `MMloa[memory, monitor]`, memory
 first, spelled `3,0,1MMloa` by both vendor clients — with presets for layouts
 1–8. The new writes have not met hardware; the old screen recall and the T-bar
 have, from Companion, on that unit.
+
+**2026-10-09 — the load target, on the unit.** The module's own `recallScreenSteps`
+(its `protocol.js`, sent over a plain socket rather than through Companion) loaded
+screen memory slot 3 into bank A of a NeXtage 16 whose bank B was on air
+(`GCsta` 1), after `PMprf` had first been set to 0 the way another client can
+leave it; program was untouched and `PMprf` ended at 1. A multiviewer layout
+load (`MMloa[memory, monitor]`) from openrcs applied itself on the same unit.
+The new Companion action has not been pressed from Companion itself yet.
