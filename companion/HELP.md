@@ -1,9 +1,9 @@
 ## openRCS — Analog Way LiveCore & Midra control
 
 Controls an Analog Way **LiveCore** (Ascender, NeXtage, SmartMatriX Ultra) or
-**Midra** (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickVu) video processor over
-its native TCP control protocol on port **10500**. Not affiliated with or
-endorsed by Analog Way; product names describe compatibility only.
+**Midra** (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu) video
+processor over its native TCP control protocol on port **10500**. Not affiliated
+with or endorsed by Analog Way; product names describe compatibility only.
 
 This is the Companion companion to the [openrcs](https://github.com/stoatworks-labs/openrcs)
 control surface — the same reverse-engineered protocol, driven from a control

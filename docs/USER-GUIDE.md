@@ -1,9 +1,9 @@
 # Companion — openRCS user guide
 
 This module controls an Analog Way **LiveCore** (Ascender, NeXtage, SmartMatriX Ultra) or
-**Midra** (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickVu) video processor from a Stream Deck or
-any other Bitfocus Companion surface, over the switcher's native TCP control protocol on port
-**10500**.
+**Midra** (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu) video processor from a
+Stream Deck or any other Bitfocus Companion surface, over the switcher's native TCP control
+protocol on port **10500**.
 
 It's the Companion companion to the [openrcs](https://github.com/stoatworks-labs/openrcs) control
 surface: the same reverse-engineered protocol, driven from a surface instead of a browser.

@@ -17,7 +17,7 @@ export const PLATFORMS = {
   },
   midra: {
     term: "\r\n",
-    label: "Midra (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickVu)",
+    label: "Midra (Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu)",
   },
 };
 
