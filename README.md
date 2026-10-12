@@ -2,19 +2,19 @@
 
 > **AI-assisted project.** This module was created with [Claude](https://claude.com/claude-code)
 > (Anthropic), directed and reviewed by a human author. The control protocol was
-> reverse-engineered rather than taken from a published specification, and has
-> been validated against real hardware in the [openrcs](https://github.com/stoatworks-labs/openrcs)
-> project — but device behaviour varies with model and firmware, so check against
-> your own processor before a show.
+> reverse-engineered rather than taken from a published spec, and it's been
+> validated against real hardware in the [openrcs](https://github.com/stoatworks-labs/openrcs)
+> project. Device behaviour varies with model and firmware, though, so try it
+> against your own processor before a show.
 
-A [Bitfocus Companion](https://bitfocus.io/companion) module for **Analog Way
-LiveCore and Midra** video processors.
+A [Bitfocus Companion](https://bitfocus.io/companion) module for Analog Way
+LiveCore and Midra video processors.
 
-It drives the switcher over its native ASCII control protocol on TCP 10500 —
-take and cut screens and groups, run the T-bar, recall master and screen
-memories, freeze inputs, black outputs — with on-air tally feedback. It is the
-control-surface companion to the [openrcs](https://github.com/stoatworks-labs/openrcs)
-browser control panel, built on the same protocol.
+It talks to the switcher in its own ASCII control protocol on TCP 10500 and lets
+you take and cut screens and groups, run the T-bar, recall master and screen
+memories, freeze inputs and black outputs, with on-air tally coming back. It's
+the control-surface sibling of the [openrcs](https://github.com/stoatworks-labs/openrcs)
+browser control panel, and speaks the same protocol.
 
 Not affiliated with or endorsed by Analog Way. Product names are used only to
 describe compatibility.
@@ -36,28 +36,29 @@ All builds, checksums and release notes: [github.com/stoatworks-labs/companion-m
 
 ## Supported hardware
 
-- **LiveCore** — Ascender 16/32/48, NeXtage 8/16, SmartMatriX Ultra
-- **Midra** — Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu
+- **LiveCore:** Ascender 16/32/48, NeXtage 8/16, SmartMatriX Ultra
+- **Midra:** Pulse2, Eikos2, Saphyr, SmartMatriX2, QuickMatriX, QuickVu
 
 ## Install
 
-Once merged into the Companion module database it appears in Companion as
-**openRCS**. To run this copy directly, point Companion's _Developer modules
+Once it's merged into the Companion module database it'll show up in Companion
+as **openRCS**. To run this copy directly, point Companion's _Developer modules
 path_ at the checkout.
 
 ## Configure
 
-Set the **Processor IP** and pick the **Platform** (LiveCore or Midra — this
-selects the command terminator and identity query). The control protocol is
-unauthenticated and accepts very few concurrent sessions; see
+Set the **Processor IP** and pick the **Platform** (LiveCore or Midra, which
+decides the command terminator and the identity query). The control protocol has
+no authentication at all and only takes a handful of sessions at once; see
 [companion/HELP.md](companion/HELP.md).
 
 ## Actions, feedbacks, presets
 
 Take/cut/T-bar/step-back for screens and groups (bank-aware), master and screen
 memory recall, multiviewer layout recall, input freeze, output black, and a
-raw-command escape hatch; on-air / transitioning / available feedbacks;
-ready-made take, memory and multiviewer-layout presets. Full list in [companion/HELP.md](companion/HELP.md).
+raw-command escape hatch. Feedbacks for on air, transitioning and available, and
+ready-made presets for takes, memories and multiviewer layouts. The full list is
+in [companion/HELP.md](companion/HELP.md).
 
 ## Develop
 
@@ -67,8 +68,8 @@ npm test            # protocol codec (byte-for-byte, no hardware)
 npm run format
 ```
 
-The wire protocol is isolated in [`src/protocol.js`](src/protocol.js), pure and
-dependency-free, and pinned by the smoke test. See [AGENTS.md](AGENTS.md).
+The wire protocol lives on its own in [`src/protocol.js`](src/protocol.js), pure
+and with no dependencies, and the smoke test pins it down. See [AGENTS.md](AGENTS.md).
 
 <!-- attributions:start -->
 
