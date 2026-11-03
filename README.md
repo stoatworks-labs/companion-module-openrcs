@@ -10,6 +10,8 @@
 A [Bitfocus Companion](https://bitfocus.io/companion) module for Analog Way
 LiveCore and Midra video processors.
 
+The [project page](https://stoatworks-labs.com/software/companion-openrcs/) has the downloads and the [user guide](https://stoatworks-labs.com/software/companion-openrcs/guide/).
+
 It talks to the switcher in its own ASCII control protocol on TCP 10500 and lets
 you take and cut screens and groups, run the T-bar, recall master and screen
 memories, freeze inputs and black outputs, with on-air tally coming back. It's
