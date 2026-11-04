@@ -1,4 +1,4 @@
-import { InstanceBase, Regex, InstanceStatus } from "@companion-module/base";
+import { InstanceBase, InstanceStatus } from "@companion-module/base";
 import { UpgradeScripts } from "./upgrades.js";
 import UpdateActions from "./actions.js";
 import UpdateFeedbacks from "./feedbacks.js";
@@ -54,13 +54,17 @@ export default class ModuleInstance extends InstanceBase {
         value:
           "Point this at an Analog Way LiveCore or Midra processor. The control protocol is <b>unauthenticated</b> on TCP 10500 — anyone who can reach the port can drive the switcher, so keep it on a trusted network. The device also accepts very few concurrent control sessions; if openrcs-server or the vendor client already holds one, this module may not connect.",
       },
+      // A plain text field rather than Regex.IP, which base 2.2.2 deprecated.
+      // The TCP connection takes a hostname or an IPv6 address as readily as
+      // an IPv4 one.
       {
         type: "textinput",
         id: "host",
         label: "Processor IP",
+        tooltip: "IP address (IPv4 or IPv6) or hostname of the processor",
         width: 8,
+        minLength: 1,
         default: "",
-        regex: Regex.IP,
       },
       {
         type: "dropdown",

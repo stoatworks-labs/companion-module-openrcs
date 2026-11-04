@@ -411,4 +411,34 @@ ok("companion/manifest.json version matches package.json", () => {
   );
 });
 
+// @companion-module/base 2.2.2 turned Regex into a proxy that logs a
+// deprecation warning for IP, HOSTNAME, PORT and the rest. The processor
+// address is a plain text field now. The port is fixed at 10500, so there is
+// no saved port to upgrade.
+ok("config fields: plain host text, no regex", () => {
+  const fields = ModuleInstance.prototype.getConfigFields.call({});
+  const byId = Object.fromEntries(fields.map((f) => [f.id, f]));
+  assert.equal(byId.host.type, "textinput");
+  assert.equal(byId.host.minLength, 1);
+  assert.deepEqual(
+    fields.filter((f) => "regex" in f).map((f) => f.id),
+    [],
+  );
+});
+
+// It matches the import, so comments naming the old constants stay legal.
+ok("no file in src/ imports Regex", () => {
+  const dir = new URL("../src/", import.meta.url).pathname;
+  const offenders = fs
+    .readdirSync(dir)
+    .filter(
+      (f) =>
+        /\.(js|ts)$/.test(f) &&
+        /import\s*{[^}]*\bRegex\b[^}]*}\s*from\s*["']@companion-module\/base/.test(
+          fs.readFileSync(dir + f, "utf8"),
+        ),
+    );
+  assert.deepEqual(offenders, [], "use a number or plain textinput field");
+});
+
 console.log(`\n${n} checks passed.`);
